@@ -42,10 +42,16 @@ function jacobian_matrices = find_jacobian_matrices(eqbm_points, x1_dot, x2_dot)
     solutions{k} = soln;
   endfor
   ################## ADD YOUR CODE HERE ######################
-  jacobian_m=jacobian([x1_dot;x2_dot],[x1;x2]);
+    
+  
   for k = 1:length(solutions)
-   jacobian_matrices{k}=subs(jacobian_m,{x1 x2},solutions{k});
-  endfor  
+   j_m{k}=subs(jacobian([x1_dot,x2_dot],[x1,x2]),{x1 x2},solutions{k});
+   jk(1,1)=double(j_m{k}(1));
+   jk(1,2)=double(j_m{k}(3));
+   jk(2,1)=double(j_m{k}(2));
+   jk(2,2)=double(j_m{k}(4));
+   jacobian_matrices{k}=jk;
+  endfor
   ############################################################  
 endfunction
 

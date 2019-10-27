@@ -8,7 +8,7 @@ x2_dot = -x1 - x2;   # YOU CAN MODIFY THESE 2 LINES TO TEST OUT OTHER EQUATIONS
 x1_dot==0;
 x2_dot==0;
 eqbm_points = solve(x1_dot,x2_dot);
-  #disp(eqbm_points);
+ 
   syms x1 x2
   solutions = {};
   jacobian_matrices = {};
@@ -18,26 +18,29 @@ eqbm_points = solve(x1_dot,x2_dot);
     soln = [x_1 x_2];
     solutions{k} = soln;
   endfor
-  #disp(x1_dot);
-  #disp(x2_dot);
-  jacobian_m=jacobian([x1_dot;x2_dot],[x1;x2]);
-  #disp(jacobian_m);
-  #jm=[[6*x1^2-1 1];[-1 -1]];
-  #disp(length(eqbm_points))
+  
   for k = 1:length(solutions)
-   jacobian_matrices{k}=subs(jacobian_m,{x1 x2},solutions{k});
-   #celldisp({subs(jacobian_m,{x1 x2},solutions{k})});
+   j_m{k}=subs(jacobian([x1_dot,x2_dot],[x1,x2]),{x1 x2},solutions{k});
+   jk(1,1)=double(j_m{k}(1));
+   jk(1,2)=double(j_m{k}(3));
+   jk(2,1)=double(j_m{k}(2));
+   jk(2,2)=double(j_m{k}(4));
+   jacobian_matrices{k}=jk;
   endfor
-  #celldisp(jacobian_matrices)
+     
+  
+
+  disp(jacobian_matrices);
+  
   stability = {};
-  eigen_values = {};
-  k=2;
+  eigen_values = {};  
+  #jacobian_matrices={[5 1;-1 -1],[-1 1;-1 -1],[5 1;-1 -1]}
   for k = 1:length(jacobian_matrices)
     matrix = jacobian_matrices{k};
-    disp(matrix);
+    #disp(matrix);
     flag = 0;
-    eigen_values{k}=eig(matrix)
-    #disp(eig(matrix));
+    eigen_values{k}=eig(matrix);
+    
     if real(eigen_values{k})<0
       flag = 1;
     endif  
@@ -49,3 +52,4 @@ eqbm_points = solve(x1_dot,x2_dot);
       stability{k} = "Unstable";
     endif
   endfor
+  
