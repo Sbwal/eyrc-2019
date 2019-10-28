@@ -21,13 +21,8 @@ eqbm_points = solve(x1_dot,x2_dot);
   
   for k = 1:length(solutions)
    j_m{k}=subs(jacobian([x1_dot,x2_dot],[x1,x2]),{x1 x2},solutions{k});
-   jk(1,1)=double(j_m{k}(1));
-   jk(1,2)=double(j_m{k}(3));
-   jk(2,1)=double(j_m{k}(2));
-   jk(2,2)=double(j_m{k}(4));
-   jacobian_matrices{k}=jk;
+   jacobian_matrices{k}=double(j_m{k});
   endfor
-     
   
 
   disp(jacobian_matrices);
