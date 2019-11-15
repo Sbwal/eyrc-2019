@@ -13,7 +13,7 @@ a_p=0;
 a_r=0;
 angle_p=0;
 angle_r=0;
-num=1000;
+num=10;
 for n = 1:num#rows(A)                        
 n
 w=X(n,:);
@@ -76,15 +76,15 @@ gz_l = gz;
 
  alpha = 0.03;
   dt = 1/100;
-  gc_p=gx_f
-  ac_p=atan2(ay_f,abs(az_f))*180/pi
+  gc_p=gx_f;
+  ac_p=atan2(ay_f,abs(az_f))*180/pi;
   
-  a_p=(1-alpha)*(a_p+-1*gc_p*dt)+(alpha)*(ac_p)
+  a_p=(1-alpha)*(a_p+-1*gc_p*dt)+(alpha)*(ac_p);
   
-  gc_r=gy_f
-  ac_r=atan2(ax_f,abs(az_f))*180/pi
-  a_r=(1-alpha)*(a_r+-1*gc_r*dt)+(alpha)*(ac_r) 
-Y(n,1)=a_p;
+  gc_r=gy_f;
+  ac_r=atan2(ax_f,abs(az_f))*180/pi;
+  a_r=(1-alpha)*(a_r+-1*gc_r*dt)+(alpha)*(ac_r);
+Y(n,1)=num2str(a_p);
 
 endfor
 
