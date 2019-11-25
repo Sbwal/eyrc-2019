@@ -13,8 +13,8 @@ pkg load control
 ##*  Date: November 3, 2019
 ##*
 ##*  Team ID :
-##*  Team Leader Name:
-##*  Team Member Name
+##*  Team Leader Name: Shubham Baranwal 
+##*  Team Member Name: Shubham Mishra, Dhruva Yadav, Neeraj Kumar
 ##*
 ##*  
 ##*  Author: e-Yantra Project, Department of Computer Science
@@ -113,10 +113,10 @@ endfunction
 function dy = complex_pulley_dynamics(y, m1, m2, m3, g, rA, rB, u)
   
   
-  dy(1,1) = ;
-  dy(2,1) = ;
-  dy(3,1) = ;
-  dy(4,1) = ;
+  dy(1,1) = y(2);
+  dy(2,1) = g*(m1-2*m2)/m1+(u(1)*rb-ra*u(2))/(m1*ra*rb);
+  dy(3,1) = y(4);
+  dy(4,1) = 2*g*(m2-m3)*(m1-m2)/m1+((m2-m3)*(u(1)*rb-ra*u(2))+m1*u(2)*ra)/(m1*ra*rb);
 endfunction
 
 ## Function : sim_complex_pulley()
