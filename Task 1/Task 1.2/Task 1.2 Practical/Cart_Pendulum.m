@@ -98,7 +98,7 @@ endfunction
 ## Purpose: Calculates the value of the vector dy according to the equations which 
 ##          govern this system.
 function dy = cart_pendulum_dynamics(y, m, M, L, g,  u)
-    
+    g=-g;
   dy(1,1) = y(2);
   dy(2,1) = (y(4)*y(4)*sin(y(3))+g*m*sin(y(3))*cos(y(3)))/(M+m*sin(y(3))*sin(y(3)))+u/(M+m*sin(y(3))*sin(y(3)));
   dy(3,1) = y(4);
@@ -138,8 +138,9 @@ endfunction
 ##          
 ## Purpose: Declare the A and B matrices in this function.
 function [A, B] = cart_pendulum_AB_matrix(m , M, L, g)
-  A = ;
-  B = ;  
+  g=-g;
+  A = [0 1 0 0; 0 0 g*m/M 0; 0 0 0 1; 0 0 (-g+(g*m/M))/L 0];
+  B = [0; 1/M; 0; 1/(L*M)];  
 endfunction
 
 ## Function : pole_place_cart_pendulum()
@@ -160,9 +161,12 @@ endfunction
 ##          tf = 10 with initial condition y0 and input u = -Kx where K is
 ##          calculated using Pole Placement Technique.
 function [t,y] = pole_place_cart_pendulum(m, M, L, g, y_setpoint, y0)
+  [A,B] = cart_pendulum_AB_matrix(m, M, L, g);                            ## Initialize A and B matrix
+  eigs = [-7; -1; -7; -1];                             ## Initialise desired eigenvalues
+  K = place(A,B,eigs);                           ## Calculate K matrix for desired eigenvalues
   
   tspan = 0:0.1:10;
-  [t,y] = ;
+  [t,y] = ode45(@(t,y)cart_pendulum_dynamics(y, m, M, L, g, -K*(y-y_setpoint)),tspan,y0);
 endfunction
 
 ## Function : lqr_cart_pendulum()
@@ -183,9 +187,14 @@ endfunction
 ##          tf = 10 with initial condition y0 and input u = -Kx where K is
 ##          calculated using LQR Controller.
 function [t,y] = lqr_cart_pendulum(m, M, L, g, y_setpoint, y0)
+   [A, B] = cart_pendulum_AB_matrix(m , M, L, g);
+    Q = [17 0 0 0; 0 26.7 0 0; 0 0 17 0; 0 0 0 26.7];                   ## Initialise Q matrix
+    R = [1];                   ## Initialise R 
+  
+  K = lqr(A,B,Q,R);                   ## Calculate K matrix from A,B,Q,R matrices
   
   tspan = 0:0.1:10;
-  [t,y] = ;
+  [t,y] = ode45(@(t,y)cart_pendulum_dynamics(y, m, M, L, g, -K*(y-y_setpoint)),tspan,y0);
 endfunction
 
 ## Function : cart_pendulum_main()
@@ -206,8 +215,7 @@ function cart_pendulum_main()
 ##  [t,y] = lqr_cart_pendulum(m, M, L, g, y_setpoint, y0);
   
   for k = 1:length(t)
-    draw_cart_pendulum(y(k, :), m, M, L);  
+    draw_cart_pendulum(y(k, :), m, M, L);
   endfor
-  
 endfunction
 

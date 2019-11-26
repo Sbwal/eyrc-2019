@@ -136,7 +136,7 @@ endfunction
 ##          calculated using Pole Placement Technique.
 function [t,y] = pole_place_pendulum(m, g, L, y_setpoint, y0)
   [A,B] = pendulum_AB_matrix(m, g, L);                            ## Initialize A and B matrix
-  eigs = [-2; -4];                             ## Initialise desired eigenvalues
+  eigs = [-39; -41];                             ## Initialise desired eigenvalues
   K = place(A,B,eigs);                           ## Calculate K matrix for desired eigenvalues
   
   tspan = 0:0.1:10;                  ## Initialise time step 
@@ -159,7 +159,7 @@ endfunction
 ##          calculated using LQR technique.
 function [t,y] = lqr_pendulum(m, g, L, y_setpoint, y0)
   [A,B] = pendulum_AB_matrix(m, g, L);               ## Initialize A and B matrix
-  Q = [1 0; 0 2];                   ## Initialise Q matrix
+  Q = [1000000 0; 0 2000000];                   ## Initialise Q matrix
   R = [1];                   ## Initialise R 
   
   K = lqr(A,B,Q,R);                   ## Calculate K matrix from A,B,Q,R matrices
@@ -177,11 +177,11 @@ function simple_pendulum_main()
   m = 1;             
   g = 9.8;
   L = 0.5;
-  y_setpoint = [pi; 0];                ## Set Point 
+  y_setpoint = [2*pi/3; 0];                ## Set Point 
   y0 = [pi/6 ; 0];                   ## Initial condtion
   
-##  [t,y] = sim_pendulum(m,g,L, y0);        ## Test Simple Pendulum
-  [t,y] = pole_place_pendulum(m,g,L, y_setpoint, y0) ## Test Simple Pendulum with Pole Placement Controller
+  [t,y] = sim_pendulum(m,g,L, y0);        ## Test Simple Pendulum
+##  [t,y] = pole_place_pendulum(m,g,L, y_setpoint, y0) ## Test Simple Pendulum with Pole Placement Controller
 ##  [t,y] = lqr_pendulum(m,g,L, y_setpoint, y0);        ## Test Simple Pendulum with LQR Controller
 
   for k = 1:length(t)
