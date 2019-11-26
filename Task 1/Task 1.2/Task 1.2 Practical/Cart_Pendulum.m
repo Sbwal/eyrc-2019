@@ -13,8 +13,8 @@ pkg load control
 ##*  Date: November 3, 2019
 ##*
 ##*  Team ID :
-##*  Team Leader Name:
-##*  Team Member Name
+##*  Team Leader Name: Shubham Baranwal 
+##*  Team Member Name: Shubham Mishra, Dhruva Yadav, Neeraj Kumar
 ##*
 ##*  
 ##*  Author: e-Yantra Project, Department of Computer Science
@@ -99,10 +99,10 @@ endfunction
 ##          govern this system.
 function dy = cart_pendulum_dynamics(y, m, M, L, g,  u)
     
-  dy(1,1) = ;
-  dy(2,1) = ;
-  dy(3,1) = ;
-  dy(4,1) = ;  
+  dy(1,1) = y(2);
+  dy(2,1) = (y(4)*y(4)*sin(y(3))+g*m*sin(y(3))*cos(y(3)))/(M+m*sin(y(3))*sin(y(3)))+u/(M+m*sin(y(3))*sin(y(3)));
+  dy(3,1) = y(4);
+  dy(4,1) = (g*sin(y(3))-((y(4)*y(4)*sin(y(3))+g*m*sin(y(3))*cos(y(3)))/(M+m*sin(y(3))*sin(y(3)))+u/(M+m*sin(y(3))*sin(y(3))))*cos(y(3)))/L;  
 endfunction
 
 ## Function : sim_cart_pendulum()
@@ -123,7 +123,7 @@ endfunction
 function [t,y] = sim_cart_pendulum(m, M, L, g, y0)
   tspan = 0:0.1:10;                  ## Initialise time step           
   u = 0;                             ## No Input
-  [t,y] = ; ## Solving the differential equation    
+  [t,y] = ode45(@(t,y)cart_pendulum_dynamics(y, m, M, L, g, u),tspan,y0); ## Solving the differential equation    
 endfunction
 
 ## Function : cart_pendulum_AB_matrix()

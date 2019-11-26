@@ -114,9 +114,9 @@ function dy = complex_pulley_dynamics(y, m1, m2, m3, g, rA, rB, u)
   
   
   dy(1,1) = y(2);
-  dy(2,1) = g*(m1-2*m2)/m1+(u(1)*rb-ra*u(2))/(m1*ra*rb);
+  dy(2,1) = g*(m1-2*m2)/m1+(u(1)*rB-rA*u(2))/(m1*rA*rB);
   dy(3,1) = y(4);
-  dy(4,1) = 2*g*(m2-m3)*(m1-m2)/m1+((m2-m3)*(u(1)*rb-ra*u(2))+m1*u(2)*ra)/(m1*ra*rb);
+  dy(4,1) = 2*g*(m2-m3)*(m1-m2)/m1+((m2-m3)*(u(1)*rB-rA*u(2))+m1*u(2)*rA)/(m1*rA*rB);
 endfunction
 
 ## Function : sim_complex_pulley()
@@ -139,7 +139,7 @@ endfunction
 function [t,y] = sim_complex_pulley(m1, m2, m3, g, rA, rB, y0)
   tspan = 0:0.1:10;                  ## Initialise time step           
   u = [0; 0];                             ## No Input
-  [t,y] = ; 
+  [t,y] = ode45(@(t,y)complex_pulley_dynamics(y, m1, m2, m3, g, rA, rB, u),tspan,y0); ## Solving the differential equation  
   endfunction
 
 ## Function : complex_pulley_AB_matrix()
@@ -156,8 +156,8 @@ function [t,y] = sim_complex_pulley(m1, m2, m3, g, rA, rB, y0)
 ##          
 ## Purpose: Declare the A and B matrices in this function.
 function [A,B] = complex_pulley_AB_matrix(m1, m2, m3, g, rA, rB)
-  A = ;
-  B = ;
+  A = [0 1 0 0; 0 0 0 0; 0 0 0 1; 0 0 0 0];
+  B = [0 0; rB/(m1*rA*rB) -rA/(m1*rA*rB); 0 0; (m2-m3)*rB/(m1*rA*rB) (m1-m2+m3)/(m1*rB)];
 endfunction
 
 ## Function : pole_place_complex_pulley()
@@ -180,9 +180,13 @@ endfunction
 ##          tf = 10 with initial condition y0 and input u = -Kx where K is
 ##          calculated using Pole Placement Technique.
 function [t,y] = pole_place_complex_pulley(m1, m2, m3, g, rA, rB, y_setpoint, y0)
+  [A,B] = complex_pulley_AB_matrix(m1, m2, m3, g, rA, rB);                            ## Initialize A and B matrix
+  eigs = [-18; -19; -18; -19];                             ## Initialise desired eigenvalues
+  K = place(A,B,eigs);                           ## Calculate K matrix for desired eigenvalues
+  
   
   tspan = 0:0.1:10;                  ## Initialise time step 
-  [t,y] = ;
+  [t,y] = ode45(@(t,y)complex_pulley_dynamics(y, m1, m2, m3, g, rA, rB, -K*(y-y_setpoint)),tspan,y0);
 endfunction
 
 ## Function : lqr_complex_pulley()
@@ -205,9 +209,14 @@ endfunction
 ##          tf = 10 with initial condition y0 and input u = -Kx where K is
 ##          calculated using LQR Controller.
 function [t,y] = lqr_complex_pulley(m1, m2, m3, g, rA, rB, y_setpoint, y0)
-    
+  [A,B] = complex_pulley_AB_matrix(m1, m2, m3, g, rA, rB);                            ## Initialize A and B matrix
+   Q = [100 0 0 0; 0 200 0 0; 0 0 200 0; 0 0 0 400];                   ## Initialise Q matrix
+  R = [1 0; 0 1];                   ## Initialise R 
+  
+  K = lqr(A,B,Q,R);                   ## Calculate K matrix from A,B,Q,R matrices
+     
   tspan = 0:0.1:10;                  ## Initialise time step 
-  [t,y] = ;
+  [t,y] = ode45(@(t,y)complex_pulley_dynamics(y, m1, m2, m3, g, rA, rB, -K*(y-y_setpoint)),tspan,y0);
 endfunction
 
 ## Function : complex_pulley_main()
@@ -232,5 +241,4 @@ function complex_pulley_main()
   for k = 1:length(t)
     draw_complex_pulley(y(k, :));
   endfor
-  
 endfunction
